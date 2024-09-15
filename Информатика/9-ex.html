@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор задач по графам</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+        canvas {
+            border: 2px solid black;
+            margin-top: 20px;
+            background-color: #ffffff;
+        }
+        .btn {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: left;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #task-container {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Генератор задач по графам</h1>
+    <button class="btn" onclick="generateTask()">Сгенерировать задание</button>
+    <div id="task-container"></div>
+    <div>
+        <canvas id="graphCanvas" width="800" height="600"></canvas>
+    </div>
+    <input type="text" id="user-answer" placeholder="Введите ваш ответ" style="font-size: 18px; padding: 10px; margin-top: 10px;">
+    <button class="btn" onclick="showAnswer()">Показать ответ</button>
+    <button class="btn" onclick="showSolution()">Показать решение</button>
+    <div id="answer-container" class="result-container">
+        <strong>Правильный ответ: </strong><span id="correct-answer"></span>
+    </div>
+    <div id="solution-container" class="result-container">
+        <strong>Решение: </strong><span id="solution"></span>
+    </div>
+
+    <script>
+        const cities = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'К', 'Л', 'М', 'Н', 'П'];
+        let graph = {};
+        let currentTask = {};
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function generateStructuredGraph() {
+            graph = {};
+            cities.forEach(city => graph[city] = []);
+
+            // Определяем уровни для города
+            const levels = [
+                ['А'],                  // Уровень 1 (начальный город)
+                ['Б', 'В', 'Г'],        // Уровень 2
+                ['Д', 'Е', 'Ж'],        // Уровень 3
+                ['К', 'Л', 'М', 'Н', 'П'] // Уровень 4 (конечные города)
+            ];
+
+            // Связываем города между уровнями
+            for (let i = 0; i < levels.length - 1; i++) {
+                levels[i].forEach(fromCity => {
+                    const toCities = levels[i + 1];
+                    const edgesToAdd = Math.min(2, toCities.length); // Не более 2 стрелок
+
+                    // Добавляем стрелки
+                    let addedEdges = 0;
+                    while (addedEdges < edgesToAdd) {
+                        const toCity = toCities[getRandomInt(toCities.length)];
+                        if (!graph[fromCity].includes(toCity)) {
+                            graph[fromCity].push(toCity);
+                            addedEdges++;
+                        }
+                    }
+                });
+            }
+
+            // Гарантируем, что каждый город (кроме последнего) имеет хотя бы одну исходящую стрелку
+            for (let city in graph) {
+                if (graph[city].length === 0 && city !== 'П') {
+                    const level = cities.indexOf(city);
+                    const nextLevelCities = levels[level + 1];
+                    const toCity = nextLevelCities[getRandomInt(nextLevelCities.length)];
+                    graph[city].push(toCity);
+                }
+            }
+        }
+
+        function drawGraph() {
+            const canvas = document.getElementById('graphCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Координаты городов
+            const cityCoordinates = {
+                'А': { x: 100, y: 300 },
+                'Б': { x: 250, y: 150 },
+                'В': { x: 250, y: 300 },
+                'Г': { x: 250, y: 450 },
+                'Д': { x: 400, y: 150 },
+                'Е': { x: 400, y: 300 },
+                'Ж': { x: 400, y: 450 },
+                'К': { x: 550, y: 100 },
+                'Л': { x: 550, y: 250 },
+                'М': { x: 550, y: 400 },
+                'Н': { x: 550, y: 550 },
+                'П': { x: 700, y: 300 },
+            };
+
+            cities.forEach(city => {
+                ctx.beginPath();
+                ctx.arc(cityCoordinates[city].x, cityCoordinates[city].y, 30, 0, 2 * Math.PI);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.stroke();
+                ctx.font = 'bold 30px Arial';
+                ctx.fillStyle = 'black';
+                ctx.fillText(city, cityCoordinates[city].x - 10, cityCoordinates[city].y + 10);
+            });
+
+            const colors = ['red', 'green', 'blue', 'purple', 'orange', 'pink', 'cyan', 'magenta', 'yellow', 'brown'];
+            let colorIndex = 0;
+
+            for (let city in graph) {
+                graph[city].forEach(neighbor => {
+                    drawStraightArrow(ctx, cityCoordinates[city].x, cityCoordinates[city].y, cityCoordinates[neighbor].x, cityCoordinates[neighbor].y, colors[colorIndex % colors.length]);
+                    colorIndex++;
+                });
+            }
+        }
+
+        function drawStraightArrow(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 20;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+
+            const offset = 30;
+            const adjustedFromX = fromX + offset * Math.cos(angle);
+            const adjustedFromY = fromY + offset * Math.sin(angle);
+            const adjustedToX = toX - offset * Math.cos(angle);
+            const adjustedToY = toY - offset * Math.sin(angle);
+
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(adjustedFromX, adjustedFromY);
+            ctx.lineTo(adjustedToX, adjustedToY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(adjustedToX, adjustedToY);
+            ctx.lineTo(adjustedToX - headlen * Math.cos(angle - Math.PI / 6), adjustedToY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(adjustedToX, adjustedToY);
+            ctx.lineTo(adjustedToX - headlen * Math.cos(angle + Math.PI / 6), adjustedToY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+
+        function calculatePaths(graph, startCity, endCity) {
+            let pathsCount = {};
+            pathsCount[startCity] = 1;
+
+            cities.forEach(city => {
+                if (!pathsCount[city]) pathsCount[city] = 0;
+                graph[city].forEach(neighbor => {
+                    if (!pathsCount[neighbor]) pathsCount[neighbor] = 0;
+                    pathsCount[neighbor] += pathsCount[city];
+                });
+            });
+
+            return pathsCount[endCity] || 0;
+        }
+
+        function generateTask() {
+            generateStructuredGraph();
+            drawGraph();
+
+            let startCity = 'А';
+            let endCity = 'П';
+            let mustPassCity = ['Б', 'В', 'Г', 'Д', 'Е', 'Ж'][getRandomInt(6)];
+
+            let pathsToMustPassCity = calculatePaths(graph, startCity, mustPassCity);
+            let pathsFromMustPassCityToEnd = calculatePaths(graph, mustPassCity, endCity);
+
+            let answer = pathsToMustPassCity * pathsFromMustPassCityToEnd;
+
+            // Убедимся, что ответ больше 8
+            if (answer <= 8) {
+                generateTask();
+                return;
+            }
+
+            currentTask = {
+                startCity: startCity,
+                endCity: endCity,
+                mustPassCity: mustPassCity,
+                answer: answer,
+                solution: `Шаг 1: Найдите количество путей от города ${startCity} до города ${mustPassCity}. Это количество равно ${pathsToMustPassCity}.
+                Шаг 2: Найдите количество путей от города ${mustPassCity} до города ${endCity}. Это количество равно ${pathsFromMustPassCityToEnd}.
+                Шаг 3: Умножьте результаты из шагов 1 и 2. Количество путей из ${startCity} в ${endCity}, проходящих через ${mustPassCity}, равно ${answer}.`
+            };
+
+            document.getElementById('task-container').innerHTML = `Сколько существует различных путей из города ${startCity} в город ${endCity}, проходящих через город ${mustPassCity}?`;
+            document.getElementById('answer-container').style.display = 'none';
+            document.getElementById('solution-container').style.display = 'none';
+            document.getElementById('user-answer').value = '';
+        }
+
+        function showAnswer() {
+            if (currentTask.answer !== undefined) {
+                document.getElementById('correct-answer').innerHTML = currentTask.answer;
+                document.getElementById('answer-container').style.display = 'block';
+            }
+        }
+
+        function showSolution() {
+            if (currentTask.solution !== undefined) {
+                document.getElementById('solution').innerHTML = currentTask.solution;
+                document.getElementById('solution-container').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
+

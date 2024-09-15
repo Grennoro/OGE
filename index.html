@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ОГЭ предметы</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=New+Amsterdam&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: #e0e0e0;
+            font-family: "New Amsterdam", serif;
+            overflow-x: hidden;
+        }
+
+        .object {
+            font-family: "Baskervville SC", serif;
+            font-size: 40px;
+            color: #ffcc66;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+        }
+
+        .top {
+            background-color: #1b1b1b;
+            width: 100%;
+            height: 90px;
+            position: fixed;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .name {
+            font-family: "New Amsterdam", serif;
+            font-size: 45px;
+            color: #ffcc66;
+            text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 130vh;
+            width: 100%;
+            background: radial-gradient(circle, rgba(45, 45, 45, 1) 0%, rgba(18, 18, 18, 1) 100%);
+            color: white;
+        }
+
+        h1 {
+            color: #ffcc66;
+            font-size: 55px;
+            text-align: center;
+            font-family: "Baskervville SC", serif;
+            text-shadow: 0px 0px 20px rgba(255, 204, 102, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .vibor {
+            font-family: "Baskervville SC", serif;
+            font-size: 25px;
+            border: 2px solid #ffcc66;
+            border-radius: 10px;
+            padding: 15px 30px;
+            color: #ffcc66;
+            background-color: transparent;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 204, 102, 0.2);
+        }
+
+        .vibor:hover {
+            background-color: #ffcc66;
+            color: black;
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 204, 102, 0.6);
+        }
+
+        .kek {
+            margin: 50px 0;
+            rotate: -5deg;
+            width: 250px;
+            transition: transform 0.5s ease;
+        }
+
+        .kek:hover {
+            transform: rotate(0) scale(1.1);
+        }
+
+        .middle {
+            padding: 50px 20px;
+            background-color: #1b1b1b;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Отступ между карточками */
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: calc(33.333% - 20px); /* Треть ширины контейнера минус отступ */
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px; /* Отступ снизу карточек */
+            text-decoration: none;
+            color: black;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 15px 15px 0 0;
+            height: 200px; /* Высота изображений */
+            object-fit: cover; /* Чтобы сохранить пропорции */
+        }
+
+        .card h3 {
+            margin: 20px;
+            font-size: 24px;
+            color: black;
+
+        }
+
+        .card p {
+            color: black;
+            font-size: 16px;
+            margin: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                width: calc(50% - 20px); /* Половина ширины контейнера минус отступ */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 100%; /* Ширина карточки 100% для маленьких экранов */
+            }
+        }
+
+        .choose {
+            font-family: "Baskervville SC", serif;
+            text-decoration: none;
+            font-size: 25px;
+            border: 2px solid #ffcc66;
+            border-radius: 10px;
+            padding: 15px 30px;
+            color: #ffcc66;
+            background-color: transparent;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 204, 102, 0.2);
+            display: block;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .choose:hover {
+            background-color: #ffcc66;
+            color: black;
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 204, 102, 0.6);
+        }
+
+        .end {
+            background-color: #0f0f0f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .end-words {
+            font-family: "Baskervville SC", serif;
+            font-size: 18px;
+            color: #ffcc66;
+        }
+
+        .theme-toggle-btn {
+            position: fixed;
+            bottom: 50px;
+            left: 20px;
+            background-color: #ffcc66;
+            color: black;
+            border: none;
+            border-radius: 30px;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn:hover {
+            box-shadow: 0 5px 30px rgba(255, 204, 102, 0.8);
+        }
+
+        /* Светлая тема */
+        .light-mode {
+            background-color: #f0f0f0;
+            color: #333333;
+        }
+
+        .light-mode .top {
+            background-color: white;
+        }
+
+        .light-mode .game {
+            color: black;
+        }
+
+        .light-mode .header {
+            background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(240, 240, 240, 1) 100%);
+            color: #333333;
+        }
+
+        .light-mode .object {
+            background-color: whitesmoke;
+            color: black;
+        }
+
+        .light-mode h1 {
+            color: #333333;
+            text-shadow: none;
+        }
+
+        .light-mode .name {
+            color: black;
+        }
+
+        .light-mode .vibor, 
+        .light-mode .choose {
+            color: #333333;
+            border-color: #333333;
+        }
+
+        .light-mode .vibor:hover,
+        .light-mode .choose:hover {
+            background-color: #333333;
+            color: #f0f0f0;
+        }
+
+        .light-mode .middle {
+            background-color: #ffffff;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .light-mode .end {
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        .light-mode .end-words {
+            color: #333333;
+        }
+
+        @media (max-width: 768px) {
+            .top {
+                flex-direction: column;
+                height: auto;
+            }
+            .silk {
+                font-size: 16px;
+            }
+            .name {
+                font-size: 35px;
+            }
+            h1 {
+                font-size: 30px;
+            }
+            .choose {
+                font-size: 13px;
+            }
+            .hell {
+                font-size: 14px;
+            }
+        }
+
+        .silk {
+            color: #d1d1d1;
+            font-size: 20px;
+            text-decoration: none;
+            margin: 0 15px;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .silk:hover {
+            color: #ffcc66;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="top">
+        <a href="Grennoro/Grennoro.html"><p class="name">Grennoro</p></a>
+        <a href="Информатика/Game.html" class="silk game">Скоротать время</a>
+    </div>
+    <button class="theme-toggle-btn" id="theme-toggle">Сменить тему</button>
+
+    <div class="header">
+        <h1>Подготовка к ОГЭ</h1>
+        <a href="#vibor" class="vibor">--->выбрать предмет<---</a>
+        <img src="OGE_MEM.jpeg" class="first_mem kek">
+        <img src="imag.jpeg" class="second_mem kek">
+    </div>
+
+    <div class="middle">
+        <div id="vibor" class="object">Предметы</div>
+
+        <div class="container">
+            <a href="" class="card">
+                <img src="image1.jpeg" alt="Картинка 1">
+                <h3>Математика</h3>
+                <p>ОГЭ по Математике. Обязательный предмет.</p>
+            </a>
+
+            <a href="Информатика/main.html" class="card">
+                <img src="image2.jpeg" alt="Картинка 2">
+                <h3>Информатика</h3>
+                <p>ОГЭ по Информатике. Не обязательный предмет.</p>
+            </a>
+
+            <a href="история.html" class="card">
+                <img src="image3.jpeg" alt="Картинка 3" class="xex">
+                <h3>История</h3>
+                <p>ОГЭ по Истории. Не обязательный предмет.</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="end">
+        <h2 class="end-words">Все права защищены.<br> Поддержать авторов - 3149 9148 9410 9481<br>Появились вопросы или нашли ошибку? Пиши на почту - infatop2917@mail.ru</h2>
+    </div>
+
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        document.body.classList.add(currentTheme + '-mode');
+        themeToggleBtn.textContent = currentTheme === 'dark' ? 'Сменить на светлую тему' : 'Сменить на тёмную тему';
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode', !isDarkMode);
+            document.body.classList.toggle('light-mode', isDarkMode);
+            localStorage.setItem('theme', isDarkMode ? 'light' : 'dark');
+            themeToggleBtn.textContent = isDarkMode ? 'Сменить на тёмную тему' : 'Сменить на светлую тему';
+        });
+    </script>
+</body>
+</html>
